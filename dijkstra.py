@@ -8,6 +8,7 @@ Steps:
 4 Repeat until at finish.
 5 Start from the finish then work backwards to find optimal path.
 """
+
 from collections import deque
 import time
 start_time = time.time()
@@ -20,26 +21,49 @@ class Dijkstra:
     finished = {}
     new_queue = deque()
 
-    def add_node(self, node, dict):
-        """Add a node to the graph in dictionary form."""
-        self.graph[node] = dict
+    def add_node(self, node, dic):
+        """Add a node to the graph in dictionary form.
+        Args:
+            node (str): name to added to graph.
+            dic (dict) dictionary of nodes connected to specified node.
+        """
+
+        self.graph[node] = dic
 
     @staticmethod
-    def min_of_dict(dict):
-        """Return index of minium value of dictionary."""
-        for item in dict:
-            if dict[item] == min(dict.values()):
+    def min_of_dict(dic):
+        """Return index of minium value of dictionary.
+        Args:
+            dict (dict) dictionary with list as values.
+        Returns:
+            minium value of dict.
+        """
+
+        for item in dic:
+            if dic[item] == min(dic.values()):
                 return item
 
     def route(self, *nodes):
-        """The distance to travel a certain path."""
+        """The distance to travel a certain path.
+        Args:
+            nodes (tuple) of nodes.
+        Returns:
+            length of route.
+        """
+
         distance = 0
         for node in nodes[:-1]:
             distance += self.graph[node][nodes[nodes.index(node) + 1]]
         return distance
 
     def shortest_path(self, start, finish):
-        """Find the shortest path from one node to another."""
+        """Find the shortest path from one node to another.
+        Args:
+            start (str) of start node.
+            finish (str) of finish node.
+        Returns:
+            shortest path in graph.
+        """
 
         # initialise queue
         for item in self.graph:

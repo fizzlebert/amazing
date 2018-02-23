@@ -8,6 +8,7 @@ Steps:
 4 Repeat until at finish.
 5 Start from the finish then work backwards to find optimal path.
 """
+
 import time
 start_time = time.time()
 
@@ -18,25 +19,35 @@ class Astar:
     queue = {}
     finished = {}
 
-    def add_node(self, node, dict):
+    def add_node(self, node, dic):
         """Add a node to the graph in dictionary form.
-        :param node name to added to graph.
-        :param dict dictionary of nodes connected to specified node."""
+        Args:
+            node (str): name to added to graph.
+            dic (dict) dictionary of nodes connected to specified node.
+        """
 
-        self.graph[node] = dict
+        self.graph[node] = dic
 
     @staticmethod
-    def min_of_dict(dict):
+    def min_of_dict(dic):
         """Return index of minium value of dictionary.
-        :param dict dictionary with list as values."""
+        Args:
+            dict (dict) dictionary with list as values.
+        Returns:
+            minium value of dict.
+        """
 
-        for item in dict:
-            if dict[item] == min(dict.values()):
+        for item in dic:
+            if dic[item] == min(dic.values()):
                 return item
 
     def route(self, *nodes):
         """The distance to travel a certain path.
-        :param nodes tuple of nodes in route."""
+        Args:
+            nodes (tuple) of nodes in route.
+        Returns:
+            length of route.
+        """
 
         distance = 0
         for node in nodes[:-1]:
@@ -45,8 +56,12 @@ class Astar:
 
     def shortest_path(self, start, finish):
         """Find the shortest path from one node to another.
-        :param start string of start node.
-        :param finish string of finish node."""
+        Args:
+            start (str) of start node.
+            finish (str) of finish node.
+        Returns:
+            shortest path in graph.
+        """
 
         # initialise queue
         for item in self.graph:

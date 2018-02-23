@@ -13,32 +13,31 @@ from PIL import Image
 
 class Solve:
 
-    def __init__(self, algorithim: str):
+    def __init__(self, algorithim):
         """Set algorithim to be used when solving.
         Args:
-            algorithim to be used when solving maze
+            algorithim (str) to be used when solving maze
         """
 
         self.algorithim = algorithim
 
-    def list_to_dict(self, list: list):
-        """Convert the maze whilst a list and convert it to list with key being
-        index of value.
+    def list_to_dict(self, list):
+        """Convert the maze to a list with key being index of value.
         Args:
-            list list to be converted
+            list (list) to be converted
         Returns:
-            dict of list
+            dict of list.
         """
         dict = {}
         for index in range(len(list)):
             dict[index] = list[index]
         return dict
 
-    def create_maze(self, width: int, height: int):
+    def create_maze(self, width, height):
         """Make maze to be solved and add border to maze.
         Args:
-            width of maze
-            height of maze
+            width (int) of maze
+            height (int) of maze
         """
 
         # create maze
@@ -70,9 +69,8 @@ class Solve:
         self.maze = self.list_to_dict(self.maze)
 
     def create_graph(self):
-        """Remove unnecessary states from maze and convert maze to graph to
-        be solved.
-        """
+        """Remove unnecessary states from maze and convert maze to graph to be
+        solved."""
 
         self.graph = {}
 
@@ -107,8 +105,7 @@ class Solve:
         # TODO: remove unnecessary states
 
     def save_maze(self):
-        """Save maze locally as an image.
-        """
+        """Save maze locally as an image."""
         # invert maze because maze is incorrect
         self.data = []
         for row in self.maze:
@@ -143,7 +140,7 @@ class Solve:
 
 
 solver = Solve("dijkstra")
-solver.create_maze(5000, 5000)
+solver.create_maze(1000, 1000)
 print("Created maze")
 for row in solver.maze:
     print(solver.maze[row].values())
