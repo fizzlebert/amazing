@@ -1,3 +1,9 @@
+# coverage related files
+htmlcov/
+.coverage
+
+# python made files
 __pycache__/
-algorithims
+
+# maze images
 *.png
