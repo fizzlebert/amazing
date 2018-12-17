@@ -103,7 +103,7 @@ class Maze:
                     self.graph[(column, row)] = {x[:][1]: 1 for x in neighbours}
         # TODO: remove unnecessary states
 
-    def save_maze(self):
+    def save(self):
         """Save maze locally as an image."""
         # invert maze because maze is incorrect
         data = []
@@ -118,7 +118,7 @@ class Maze:
         image.putdata(data)
         image.save("maze.png")
 
-    def solve_maze(self):
+    def solve(self):
         """Solve maze using specified algorithim.
         Returns:
             shortest path as a queue from start to finish of maze
