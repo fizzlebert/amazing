@@ -31,19 +31,6 @@ class Astar:
 
         self.graph[node] = dic
 
-    @staticmethod
-    def min_of_dict(dic):
-        """Return index of minium value of dictionary.
-        Args:
-            dict (dict) dictionary with list as values.
-        Returns:
-            minium value of dict.
-        """
-
-        for item in dic:
-            if dic[item] == min(dic.values()):
-                return item
-
     def route(self, *nodes):
         """The distance to travel a certain path.
         Args:
@@ -78,8 +65,6 @@ class Astar:
         # keep running until at finish
         while state != finish:
 
-            if state not in self.graph:
-                raise NodeNotFound(state)
             # update distance of neighbouring nodes
             for item in list(self.graph[state])[:-1]:
                 distance = (
@@ -96,8 +81,17 @@ class Astar:
             # remove node once all neighbours have been updated
             self.finished[state] = self.queue.pop(state)
 
-            # update state
-            state = self.min_of_dict(self.queue)
+            # move to first item in queue
+            if self.queue:
+                state = min(self.queue, key=lambda e: self.queue[e])
+            else:
+                # move to end if nothing left in queue
+                state = finish
+
+            # check state exists
+            if state not in self.graph:
+                raise NodeNotFound(state)
+
         self.finished[state] = self.queue[state]
 
         # reverse back to find path
