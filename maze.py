@@ -1,25 +1,37 @@
-"""Create a maze and solve it of a maze and solve it.
+"""
+Create a maze and solve it of a maze and solve it.
 
-1 Create maze.
-2 Convert maze to graph.
-2 Remove unnecessary states from maze.
-3 Solve maze with algorithim.
+Steps:
+1. Create maze using the daedalus library.
+2. Convert maze to graph.
+3. Solve maze with algorithim.
 """
 
-from daedalus import Maze
+from daedalus import Maze as maze
 from dijkstra import Dijkstra
+from astar import Astar
 from PIL import Image
 
 
-class Solve:
+class Maze:
 
-    def __init__(self, algorithim):
+    WHITE = (0, 0, 0)
+    BLACK = (255, 255, 255)
+    RED = (255, 0, 0)
+
+    def __init__(self, algorithim, width, height):
         """Set algorithim to be used when solving.
         Args:
             algorithim (str) to be used when solving maze
         """
 
         self.algorithim = algorithim
+        if not width % 2 or not height % 2:
+            print(
+                "Using even number width or height use even number for optimal images"
+            )
+        self.create_maze(width, height)
+        self.create_graph()
 
     def list_to_dict(self, list):
         """Convert the maze to a list with key being index of value.
@@ -41,8 +53,7 @@ class Solve:
         """
 
         # create maze
-        # because a border is added
-        self.maze = Maze(width - 2, height - 2)
+        self.maze = maze(width, height)
         self.maze.create_perfect()
 
         # define maze variables
@@ -51,17 +62,6 @@ class Solve:
 
         # convert to list
         self.maze = list(self.maze)
-
-        # add boarder, entrance and exit
-        self.maze.insert(0, [1] * (width - 3))
-        self.maze[0].insert(self.entrance[0], 0)
-
-        self.maze.insert(len(self.maze), [1] * (width - 3))
-        self.maze[-1].insert(self.exit[1], 0)
-
-        for item in self.maze:
-            item.insert(0, 1)
-            item.insert(len(item), 1)
 
         # add index to maze
         for index in range(len(self.maze)):
@@ -100,53 +100,60 @@ class Solve:
                             neighbours.append(["below", (column + 1, row)])
                     except KeyError:
                         None
-                    self.graph[(column, row)] = {x[:][1]: 1 for x in
-                                                 neighbours}
+                    self.graph[(column, row)] = {x[:][1]: 1 for x in neighbours}
         # TODO: remove unnecessary states
 
     def save_maze(self):
         """Save maze locally as an image."""
         # invert maze because maze is incorrect
-        self.data = []
+        data = []
         for row in self.maze:
             for item in self.maze[row].values():
-                if item == 1:
-                    self.data.append(0)
+                if item:
+                    data.append(self.WHITE)
                 else:
-                    self.data.append(1)
+                    data.append(self.BLACK)
         # save maze
-        image = Image.new("1", (len(self.maze[0]), len(self.maze)))
-        image.putdata(self.data)
-        image.save("image.png")
+        image = Image.new("RGB", (len(self.maze[0]), len(self.maze)))
+        image.putdata(data)
+        image.save("maze.png")
 
     def solve_maze(self):
         """Solve maze using specified algorithim.
         Returns:
             shortest path as a queue from start to finish of maze
         """
-        algorithim = Dijkstra()
+        # TODO: be able to change algorithim
+        algorithim = Astar()
+        # algorithim = Dijkstra()
+        # add nodes to graph
         for node in self.graph:
             algorithim.add_node(node, self.graph[node])
-        self.entrance = [entrance + 1 for entrance in self.entrance]
-        self.exit = [exit + 1 for exit in self.exit]
-        self.entrance.reverse()
-        self.exit.reverse()
-        self.path = algorithim.shortest_path(tuple(self.entrance),
-                                             tuple(self.exit))
+        # pydaedalus stores y then x value which need to be reversed
+        self.entrance = tuple(reversed(self.entrance))
+        self.exit = tuple(reversed(self.exit))
+        self.path = algorithim.shortest_path(self.entrance, self.exit)
 
     def save_solution(self):
-        """Save maze image and the shortest path.
-        """
+        """Save maze image and the shortest path."""
+        data = []
+        print(self.path)
+        for row_i, row in enumerate(list(self.maze)):
+            for item_i, item in enumerate(self.maze[row].values()):
+                if (row_i, item_i) in self.path:
+                    data.append(self.RED)
+                elif item:
+                    data.append(self.WHITE)
+                else:
+                    data.append(self.BLACK)
 
+        image = Image.new("RGB", (len(self.maze[0]), len(self.maze)))
+        image.putdata(data)
+        image.save("solution.png")
 
-solver = Solve("dijkstra")
-solver.create_maze(1000, 1000)
-print("Created maze")
-for row in solver.maze:
-    print(solver.maze[row].values())
-solver.create_graph()
-print("Created graph")
-solver.save_maze()
-print("Save maze")
-solver.solve_maze()
-print("Solved maze")
+    def __str__(self):
+        """Just cause it looks nice"""
+        string = []
+        for row in self.maze:
+            string.append(["█" if item else " " for item in self.maze[row].values()])
+        return "\n".join(["".join(line) for line in string])
