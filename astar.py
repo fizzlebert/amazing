@@ -10,6 +10,9 @@ Steps:
 """
 
 import time
+
+from errors import NodeNotFound
+
 start_time = time.time()
 
 
@@ -75,10 +78,15 @@ class Astar:
         # keep running until at finish
         while state != finish:
 
+            if state not in self.graph:
+                raise NodeNotFound(state)
             # update distance of neighbouring nodes
             for item in list(self.graph[state])[:-1]:
-                distance = self.route(state, item) + self.queue[state][0] + \
-                    self.graph[item][list(self.graph[item])[-1]]
+                distance = (
+                    self.route(state, item)
+                    + self.queue[state][0]
+                    + self.graph[item][list(self.graph[item])[-1]]
+                )
 
                 # if hasn't been visited and is less than current distance
                 if item not in self.finished:
