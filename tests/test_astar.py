@@ -1,5 +1,4 @@
-from errors import NodeNotFound
-from astar import Astar
+from context import Astar, errors
 
 import pytest
 
@@ -18,5 +17,5 @@ def test_scenario():
 
 
 def test_unknown_node():
-    with pytest.raises(NodeNotFound):
+    with pytest.raises(errors.NodeNotFound):
         graph.shortest_path("a", "g")

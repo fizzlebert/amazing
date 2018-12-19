@@ -1,5 +1,4 @@
-from errors import NodeNotFound
-from dijkstra import Dijkstra
+from context import Dijkstra, errors
 
 import pytest
 
@@ -18,5 +17,5 @@ def test_scenario():
 
 
 def test_unknown_node():
-    with pytest.raises(NodeNotFound):
+    with pytest.raises(errors.NodeNotFound):
         graph.shortest_path("a", "g")
