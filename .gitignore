@@ -7,3 +7,7 @@ __pycache__/
 
 # maze images
 *.png
+
+# build files
+build/
+dist/
