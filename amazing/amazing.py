@@ -8,8 +8,8 @@ Steps:
 """
 
 from daedalus import Maze as maze
-from dijkstra import Dijkstra
-from astar import Astar
+from .dijkstra import Dijkstra
+from .astar import Astar
 from PIL import Image
 
 

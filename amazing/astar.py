@@ -1,20 +1,22 @@
 """
-A simple implementation of the dijkstra search in a graph.
+A simple implementation of the a* search in a graph.
 
 Steps:
-1. Update distance of neighbouring nodes in queue.
-2. Remove node from queue and move to finished dictionary.
-3. Move to first node in queue.
-4. Repeat until at finish.
-5. Start from the finish then work backwards to find optimal path.
+1 Update distance of neighbouring nodes in queue.
+2 Remove node from queue and move to finished dictionary.
+3 Move to first node in queue.
+4 Repeat until at finish.
+5 Start from the finish then work backwards to find optimal path.
 """
 
-from collections import deque
+import time
 
-from errors import NodeNotFound
+from .errors import NodeNotFound
+
+start_time = time.time()
 
 
-class Dijkstra:
+class Astar:
 
     graph = {}
     queue = {}
@@ -32,7 +34,7 @@ class Dijkstra:
     def route(self, *nodes):
         """The distance to travel a certain path.
         Args:
-            nodes (tuple) of nodes.
+            nodes (tuple) of nodes in route.
         Returns:
             length of route.
         """
@@ -64,8 +66,12 @@ class Dijkstra:
         while state != finish:
 
             # update distance of neighbouring nodes
-            for item in self.graph[state]:
-                distance = self.route(state, item) + self.queue[state][0]
+            for item in list(self.graph[state])[:-1]:
+                distance = (
+                    self.route(state, item)
+                    + self.queue[state][0]
+                    + self.graph[item][list(self.graph[item])[-1]]
+                )
 
                 # if hasn't been visited and is less than current distance
                 if item not in self.finished:
