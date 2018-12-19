@@ -4,7 +4,7 @@ Create a maze and solve it of a maze and solve it.
 Steps:
 1. Create maze using the daedalus library.
 2. Convert maze to graph.
-3. Solve maze with algorithim.
+3. Solve maze with algorithm.
 """
 
 from daedalus import Maze as maze
@@ -19,19 +19,23 @@ class Maze:
     BLACK = (255, 255, 255)
     RED = (255, 0, 0)
 
-    def __init__(self, algorithim, width, height):
-        """Set algorithim to be used when solving.
+    def __init__(self, width, height, algorithm="dijkstra"):
+        """Set algorithm to be used when solving.
         Args:
-            algorithim (str) to be used when solving maze
+            algorithm (str) to be used when solving maze
+            width (int) of maze in pixels
+            height (int) of maze in pixels
         """
 
-        self.algorithim = algorithim
+        self.algorithm = algorithm
         if not width % 2 or not height % 2:
             print(
                 "Using even number width or height use even number for optimal images"
             )
         self.create_maze(width, height)
         self.create_graph()
+        self.width = width
+        self.height = height
 
     def list_to_dict(self, list):
         """Convert the maze to a list with key being index of value.
@@ -119,20 +123,24 @@ class Maze:
         image.save("maze.png")
 
     def solve(self):
-        """Solve maze using specified algorithim.
+        """Solve maze using specified algorithm.
         Returns:
             shortest path as a queue from start to finish of maze
         """
-        # TODO: be able to change algorithim
-        algorithim = Astar()
-        # algorithim = Dijkstra()
+        # TODO: be able to change algorithm
+        if self.algorithm == "astar":
+            algorithm = Astar()
+        elif self.algorithm == "dijkstra":
+            algorithm = Dijkstra()
+        else:
+            print(f"{self.algorithm} not found only astar and dijkstra available")
         # add nodes to graph
         for node in self.graph:
-            algorithim.add_node(node, self.graph[node])
+            algorithm.add_node(node, self.graph[node])
         # pydaedalus stores y then x value which need to be reversed
         self.entrance = tuple(reversed(self.entrance))
         self.exit = tuple(reversed(self.exit))
-        self.path = algorithim.shortest_path(self.entrance, self.exit)
+        self.path = algorithm.shortest_path(self.entrance, self.exit)
 
     def save_solution(self):
         """Save maze image and the shortest path."""
@@ -157,3 +165,6 @@ class Maze:
         for row in self.maze:
             string.append(["█" if item else " " for item in self.maze[row].values()])
         return "\n".join(["".join(line) for line in string])
+    
+    def __repr__(self):
+        return f"Maze(algorithm='{self.algorithm}', width={self.width}, height={self.height})"
