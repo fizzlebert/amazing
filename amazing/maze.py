@@ -1,19 +1,29 @@
-"""
-Create a maze and solve it of a maze and solve it.
-
-Steps:
-1. Create maze using the daedalus library.
-2. Convert maze to graph.
-3. Solve maze with algorithm.
-"""
-
-from daedalus import Maze as maze
+from .exceptions import MazeNotSolved, AlgorithmNotFound
 from .dijkstra import Dijkstra
 from .astar import Astar
+
+from functools import wraps
+import warnings
+
+from daedalus import Maze as _maze
 from PIL import Image
+
+warnings.simplefilter("once", UserWarning)
 
 
 class Maze:
+    """
+    Create a maze and solve it.
+
+    Available algorithms:
+        dijkstra
+        astar (WIP)
+
+    Steps:
+    1. Create maze using the daedalus library.
+    2. Convert maze to graph.
+    3. Solve maze with algorithm.
+    """
 
     WHITE = (0, 0, 0)
     BLACK = (255, 255, 255)
@@ -29,27 +39,15 @@ class Maze:
 
         self.algorithm = algorithm
         if not width % 2 or not height % 2:
-            print(
-                "Using even number width or height use even number for optimal images"
+            warnings.warn(
+                "Using even width or height, use even numbers for optimal images"
             )
-        self.create_maze(width, height)
-        self.create_graph()
+        self._create_maze(width, height)
+        self._create_graph()
         self.width = width
         self.height = height
 
-    def list_to_dict(self, list):
-        """Convert the maze to a list with key being index of value.
-        Args:
-            list (list) to be converted
-        Returns:
-            dict of list.
-        """
-        dict = {}
-        for index in range(len(list)):
-            dict[index] = list[index]
-        return dict
-
-    def create_maze(self, width, height):
+    def _create_maze(self, width, height):
         """Make maze to be solved and add border to maze.
         Args:
             width (int) of maze
@@ -57,22 +55,20 @@ class Maze:
         """
 
         # create maze
-        self.maze = maze(width, height)
+        self.maze = _maze(width, height)
         self.maze.create_perfect()
 
         # define maze variables
         self.entrance = self.maze.entrance
         self.exit = self.maze.exit
 
-        # convert to list
-        self.maze = list(self.maze)
-
         # add index to maze
-        for index in range(len(self.maze)):
-            self.maze[index] = self.list_to_dict(self.maze[index])
-        self.maze = self.list_to_dict(self.maze)
+        self.maze = {
+            row_i: {item_i: item for item_i, item in enumerate(row)}
+            for row_i, row in enumerate(self.maze)
+        }
 
-    def create_graph(self):
+    def _create_graph(self):
         """Remove unnecessary states from maze and convert maze to graph to be
         solved."""
 
@@ -107,33 +103,46 @@ class Maze:
                     self.graph[(column, row)] = {x[:][1]: 1 for x in neighbours}
         # TODO: remove unnecessary states
 
-    def save(self):
+    def _maze_maker(file_name):
+        def real_decorator(func):
+            @wraps(func)
+            def wrapper(self, *args, **kwargs):
+                data = []
+                for row_i, row in enumerate(list(self.maze)):
+                    for item_i, item in enumerate(self.maze[row].values()):
+                        func(self, data, item, row_i=row_i, item_i=item_i)
+
+                # save maze
+                image = Image.new("RGB", (self.width, self.height))
+                image.putdata(data)
+                image.save(file_name)
+
+            return wrapper
+
+        return real_decorator
+
+    @_maze_maker("maze.png")
+    def save(self, data, item, row_i=None, item_i=None):
         """Save maze locally as an image."""
         # invert maze because maze is incorrect
-        data = []
-        for row in self.maze:
-            for item in self.maze[row].values():
-                if item:
-                    data.append(self.WHITE)
-                else:
-                    data.append(self.BLACK)
-        # save maze
-        image = Image.new("RGB", (len(self.maze[0]), len(self.maze)))
-        image.putdata(data)
-        image.save("maze.png")
+        if item:
+            data.append(self.WHITE)
+        else:
+            data.append(self.BLACK)
 
     def solve(self):
-        """Solve maze using specified algorithm.
+        """ Solve maze using specified algorithm.
         Returns:
             shortest path as a queue from start to finish of maze
         """
-        # TODO: be able to change algorithm
         if self.algorithm == "astar":
             algorithm = Astar()
         elif self.algorithm == "dijkstra":
             algorithm = Dijkstra()
         else:
-            print(f"{self.algorithm} not found only astar and dijkstra available")
+            raise AlgorithmNotFound(
+                f"Invalid algorithm: {self.algorithm}.  See help({type(self).__name__}) for available algorithms."
+            )
         # add nodes to graph
         for node in self.graph:
             algorithm.add_node(node, self.graph[node])
@@ -142,29 +151,27 @@ class Maze:
         self.exit = tuple(reversed(self.exit))
         self.path = algorithm.shortest_path(self.entrance, self.exit)
 
-    def save_solution(self):
+    @_maze_maker("solution.png")
+    def save_solution(self, data, item, row_i=None, item_i=None):
         """Save maze image and the shortest path."""
-        data = []
-        print(self.path)
-        for row_i, row in enumerate(list(self.maze)):
-            for item_i, item in enumerate(self.maze[row].values()):
-                if (row_i, item_i) in self.path:
-                    data.append(self.RED)
-                elif item:
-                    data.append(self.WHITE)
-                else:
-                    data.append(self.BLACK)
-
-        image = Image.new("RGB", (len(self.maze[0]), len(self.maze)))
-        image.putdata(data)
-        image.save("solution.png")
+        if not hasattr(self, "path"):
+            raise MazeNotSolved(
+                f"Maze must be solved to save solution. Run {type(self).__name__}.solve() first."
+            )
+        if (row_i, item_i) in self.path:
+            data.append(self.RED)
+        elif item:
+            data.append(self.WHITE)
+        else:
+            data.append(self.BLACK)
 
     def __str__(self):
-        """Just cause it looks nice"""
+        """Just cause it looks nice."""
         string = []
         for row in self.maze:
             string.append(["█" if item else " " for item in self.maze[row].values()])
         return "\n".join(["".join(line) for line in string])
-    
+
     def __repr__(self):
+        """Easier on the eyes."""
         return f"Maze(algorithm='{self.algorithm}', width={self.width}, height={self.height})"
