@@ -11,7 +11,7 @@ Steps:
 
 import time
 
-from .errors import NodeNotFound
+from .exceptions import NodeNotFound
 
 start_time = time.time()
 

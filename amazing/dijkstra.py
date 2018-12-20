@@ -11,7 +11,7 @@ Steps:
 
 from collections import deque
 
-from .errors import NodeNotFound
+from .exceptions import NodeNotFound
 
 
 class Dijkstra:
