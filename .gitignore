@@ -8,6 +8,10 @@ __pycache__/
 # maze images
 *.png
 
-# build files
+# distribution and building files
 build/
 dist/
+*.egg-info/
+
+# coverage related files
+htmlcov/
