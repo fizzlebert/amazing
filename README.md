@@ -1,5 +1,8 @@
-# Maze solver
-> Very simple maze solver
+# Amazing mazes
+> Very simple maze solver, with an amazing name
+
+## 🚧🚧 🛑 🚧🚧 WIP
+Not yet completed
 
 ## What is it?
 Creates maze and then solves based on specified algorithm.  This was inspired
@@ -15,15 +18,15 @@ with python 3.7.
 Using the pydaedalus library a maze is created according to the specified size.
 Next the maze is converted to a graph, this is done so in a very ugly brought
 force method.  Next the image is solved using the specified algorithm,
-currently only working with dijkstra's.  Further information into how each
+currently only working with Dijkstra's.  Further information into how each
 algorithm is implemented is in their file.
 
 
 ## Example
 - Create a maze
 ``` python
->>> from maze import Maze
->>> m = Maze("dijkstra", 21, 21)
+>>> from amazing import Maze
+>>> m = Maze(21, 21)  # by default uses Dijkstra
 ```
 
 - Solve 
