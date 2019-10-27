@@ -3,10 +3,11 @@
 
 ## 🚧🚧 🛑 🚧🚧 WIP
 Not yet completed
+Currently I am unable to install pydaedalus and have stopped working on it
 
 ## What is it?
 Creates maze and then solves based on specified algorithm.  This was inspired
-by Michael Pound's [video on Dijkstra's algorithim](https://youtu.be/GazC3A4OQTE)
+by Michael Pound's [video on Dijkstra's algorithm](https://youtu.be/GazC3A4OQTE)
 and his [video on maze solving](https://youtube.be/rop0W4QDOUI). This project
 uses's Will Robert's [pydaedalus](https://github.com/wroberts/pydaedalus) to
 create mazes, without it this project would probably not exist.  The only

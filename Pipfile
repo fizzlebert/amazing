@@ -5,10 +5,11 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+flake8 = "*"
 
 [packages]
 pydaedalus = "*"
-pillow = "*"
+pillow = ">=6.2.0"
 
 [requires]
 python_version = "3.6"
